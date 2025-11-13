@@ -2,8 +2,8 @@ import streamlit as st
 import tensorflow as tf
 import numpy as np
 from PIL import Image
+import zipfile
 import os
-import gdown   # ✅ used for downloading from Google Drive
 
 # ---------------------------------------------------------
 # 🌎 PAGE CONFIGURATION
@@ -61,21 +61,25 @@ div[data-baseweb="radio"] input:checked + label {
 """, unsafe_allow_html=True)
 
 # ---------------------------------------------------------
-# 🧠 LOAD MODEL (runtime download + caching)
+# 🧠 LOAD MODEL (from ZIP if needed)
 # ---------------------------------------------------------
 @st.cache_resource
 def load_model():
+    zip_path = "ecobot_updated.zip"
     model_path = "ecobot_updated.keras"
-    file_id = "1RP70xfPI9Q_VMnpjIzD8kzOgJyatgOlg"
-    gdrive_url = f"https://drive.google.com/uc?id={file_id}"
 
-    # ✅ Step 1: Download if not already present
+    # ✅ Step 1: Extract if not already extracted
     if not os.path.exists(model_path):
-        with st.spinner("🔄 Downloading model from Google Drive... Please wait (~30 MB)..."):
-            gdown.download(gdrive_url, model_path, quiet=False)
-        st.success("✅ Model downloaded successfully!")
+        if os.path.exists(zip_path):
+            with st.spinner("📦 Extracting model files... please wait..."):
+                with zipfile.ZipFile(zip_path, "r") as zip_ref:
+                    zip_ref.extractall(".")
+            st.success("✅ Model extracted successfully!")
+        else:
+            st.error("❌ Model file not found. Please ensure 'ecobot_updated.zip' is in your project folder.")
+            st.stop()
 
-    # ✅ Step 2: Load the model
+    # ✅ Step 2: Load model
     model = tf.keras.models.load_model(model_path, compile=False)
     return model
 
