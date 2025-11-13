@@ -63,27 +63,17 @@ div[data-baseweb="radio"] input:checked + label {
 # ---------------------------------------------------------
 # 🧠 LOAD MODEL (from ZIP if needed)
 # ---------------------------------------------------------
+
+
 @st.cache_resource
 def load_model():
-    zip_path = "ecobot_updated.zip"
-    model_path = "ecobot_updated.keras"
-
-    # ✅ Step 1: Extract if not already extracted
+    model_path = "ecobot_updated.h5"
     if not os.path.exists(model_path):
-        if os.path.exists(zip_path):
-            with st.spinner("📦 Extracting model files... please wait..."):
-                with zipfile.ZipFile(zip_path, "r") as zip_ref:
-                    zip_ref.extractall(".")
-            st.success("✅ Model extracted successfully!")
-        else:
-            st.error("❌ Model file not found. Please ensure 'ecobot_updated.zip' is in your project folder.")
-            st.stop()
-
-    # ✅ Step 2: Load model
+        st.error("❌ Model file not found in project folder.")
+        st.stop()
     model = tf.keras.models.load_model(model_path, compile=False)
     return model
-
-
+    
 # Load model once (cached)
 model = load_model()
 
@@ -180,3 +170,4 @@ It helps promote sustainable waste management by identifying waste categories in
 # 🪪 FOOTER
 # ---------------------------------------------------------
 st.markdown("<div class='footer'>Made with ❤️ by SmartSort | Smart Waste Classification © 2025</div>", unsafe_allow_html=True)
+
