@@ -67,7 +67,7 @@ div[data-baseweb="radio"] input:checked + label {
 
 @st.cache_resource
 def load_model():
-    model_path = "ecobot_updated.h5"
+    model_path = "ecobot_clean.keras"
     if not os.path.exists(model_path):
         st.error("❌ Model file not found in project folder.")
         st.stop()
@@ -170,4 +170,5 @@ It helps promote sustainable waste management by identifying waste categories in
 # 🪪 FOOTER
 # ---------------------------------------------------------
 st.markdown("<div class='footer'>Made with ❤️ by SmartSort | Smart Waste Classification © 2025</div>", unsafe_allow_html=True)
+
 
