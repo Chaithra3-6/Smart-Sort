@@ -2,6 +2,8 @@ import streamlit as st
 import tensorflow as tf
 import numpy as np
 from PIL import Image
+import os
+import gdown   # ✅ used for downloading from Google Drive
 
 # ---------------------------------------------------------
 # 🌎 PAGE CONFIGURATION
@@ -59,50 +61,37 @@ div[data-baseweb="radio"] input:checked + label {
 """, unsafe_allow_html=True)
 
 # ---------------------------------------------------------
-# 🧠 LOAD MODEL (with caching + runtime download)
+# 🧠 LOAD MODEL (runtime download + caching)
 # ---------------------------------------------------------
-import os
-import requests
-
 @st.cache_resource
 def load_model():
     model_path = "ecobot_updated.keras"
+    file_id = "1RP70xfPI9Q_VMnpjIzD8kzOgJyatgOlg"
+    gdrive_url = f"https://drive.google.com/uc?id={file_id}"
 
-    # ✅ Step 1: Check if model exists locally
+    # ✅ Step 1: Download if not already present
     if not os.path.exists(model_path):
-        with st.spinner("🔄 Downloading model... please wait."):
-            # ✅ Step 2: Direct download link from Google Drive
-            url = "https://drive.google.com/uc?export=download&id=1RP70xfPI9Q_VMnpjIzD8kzOgJyatgOlg"
+        with st.spinner("🔄 Downloading model from Google Drive... Please wait (~30 MB)..."):
+            gdown.download(gdrive_url, model_path, quiet=False)
+        st.success("✅ Model downloaded successfully!")
 
-            # Step 3: Download and save model
-            response = requests.get(url, stream=True)
-            response.raise_for_status()
-            with open(model_path, "wb") as f:
-                for chunk in response.iter_content(chunk_size=8192):
-                    f.write(chunk)
-            st.success("✅ Model downloaded successfully!")
-
-    # Step 4: Load model
+    # ✅ Step 2: Load the model
     model = tf.keras.models.load_model(model_path, compile=False)
     return model
 
+
+# Load model once (cached)
 model = load_model()
 
-#@st.cache_resource
-#def load_model():
-#    model_path = "ecobot_updated.keras"
-#    model = tf.keras.models.load_model(model_path, compile=False)
- #   return model
-
-#model = load_model()
-
-# Define classes and color scheme
+# ---------------------------------------------------------
+# 🏷️ CLASS DEFINITIONS
+# ---------------------------------------------------------
 CLASSES = ['Dry', 'E-waste', 'Manual', 'Wet']
 COLOR_MAP = {
-    'Dry': '#1E90FF' ,       # blue
-    'Wet': '#2E8B57',       # Green
-    'E-waste': '#FFA500',   # orange
-    'Manual': '#A9A9A9'     # Grey
+    'Dry': '#1E90FF',     # Blue
+    'Wet': '#2E8B57',     # Green
+    'E-waste': '#FFA500', # Orange
+    'Manual': '#A9A9A9'   # Grey
 }
 
 # ---------------------------------------------------------
@@ -181,10 +170,9 @@ It helps promote sustainable waste management by identifying waste categories in
 2. Wet  
 3. E-waste  
 4. Manual  
-
 """)
 
 # ---------------------------------------------------------
 # 🪪 FOOTER
 # ---------------------------------------------------------
-st.markdown("<div class='footer'>Made with ❤️ by Ecobot | Smart Waste Classification © 2025</div>", unsafe_allow_html=True)
+st.markdown("<div class='footer'>Made with ❤️ by SmartSort | Smart Waste Classification © 2025</div>", unsafe_allow_html=True)
