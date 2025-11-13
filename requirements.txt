@@ -2,7 +2,8 @@ streamlit
 tensorflow
 pillow
 numpy
-gdown
-requests
+
+
+
 
 
